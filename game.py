@@ -37,6 +37,7 @@ class Game:
             'player/wall_slide': Animation(load_images('entities/player/wall_slide')),
             'particle/leaf': Animation(load_images('particles/leaf'), img_dur=20, loop = False),
             'particle/particle': Animation(load_images('particles/particle'), img_dur=6, loop = False),
+            'player/attack': Animation(load_images('entities/player/attack')),
         }
         
         self.clouds = Clouds(self.assets['clouds'], count=16)
@@ -50,6 +51,11 @@ class Game:
         for tree in self.tilemap.extract([('large_decor', 2)], keep=True):
             self.leaf_spawners.append(pygame.Rect(4 + tree['pos'][0], 4 + tree['pos'][1], 23, 13))
         
+        for spawner in self.tilemap.extract(['spawners',0], ['spawners',1]):
+            if sapwner['variant'] == 0:
+                self.player.pos = spawner['pos']
+
+
         self.particles = []
 
         self.scroll = [0, 0]
@@ -96,7 +102,7 @@ class Game:
                     if event.key == pygame.K_UP:
                         self.player.jump()
                     if event.key == pygame.K_x:
-                        self.palyer.dash()
+                        self.player.dash()
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT:
                         self.movement[0] = False
