@@ -89,6 +89,13 @@ class Enemy(PhysicsEntity):
             else:
                 self.flip = not self.flip
             self.walking = max(0,self.walking-1)
+            if not self.walking:
+                dis = (self.game.player.pos[0] - self.pos[0], self.game.player.pos[1] - self.pos[1])
+                if (abs(dis[1]) < 16):
+                    if (self.flip and dis[0] < 0):
+                        self.game.projectiles.append([[self.rect().centerx - 7, self.rect().centery], -1.5, 0])
+                    if (not self.flip and dis[0]>0):
+                        self.game.projectiles.append([[self.rect().centerx - 7, self.rect().centery], -1.5, 0])
         elif random.random()<0.01:
             self.walking = random.randint(30,120)
 
@@ -98,6 +105,15 @@ class Enemy(PhysicsEntity):
             self.set_action('run')
         else:
             self.set_action('idle')
+
+    def render(self, surf, offset=(0,0)):
+        super().render(surf, offset=offset)
+
+        #"to take gun's possition more highly, add minus 4 to gun's centery"
+        if self.flip:
+            surf.blit(pygame.transform.flip(self.game.assets['gun'], True, False), (self.rect().centerx-4 - self.game.assets['gun'].get_width() - offset[0], self.rect().centery - offset[1] -4 ))
+        else:
+            surf.blit(self.game.assets['gun'], (self.rect().centerx + 4 - offset[0], self.rect().centery - offset[1]-4 ))
 
 class Player(PhysicsEntity):
     def __init__(self, game, pos, size):
@@ -150,7 +166,7 @@ class Player(PhysicsEntity):
                 self.velocity[0] *= 0.1
             pvelocity = [abs(self.dashing) / self.dashing * random.random()*3, 0]
             self.game.particles.append(Particle(self.game, 'particle', self.rect().center, velocity = pvelocity, frame = random.randint(0,7)))
-            #add dash motion not disappear
+            #"add dash motion not disappear"
             self.set_action('attack')
 
                         
@@ -159,7 +175,7 @@ class Player(PhysicsEntity):
         else:
             self.velocity[0] = min(self.velocity[0] + 0.1, 0)
 
-    #function making disappear when i use dash
+    #"function making disappear when i use dash"
     #def render(self, surf, offset=(0,0)):
         #if abs(self.dashing) <= 50:
             #super().render(surf, offset = offset)
