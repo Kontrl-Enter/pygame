@@ -67,8 +67,6 @@ class Tilemap:
         if not keep:
             for m in matches:
                 tile_pos=str(int(m['pos'][0]/self.tile_size) )+";"+str(int(m['pos'][1]/self.tile_size))
-                print(tile_pos)
-                print(self.tilemap.keys())
                 if tile_pos in list(self.tilemap):
                     del self.tilemap[tile_pos]
         matches=matches+matches_offgrid
