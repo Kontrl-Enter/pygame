@@ -25,6 +25,7 @@ class Tilemap:
         self.tilemap = {}
         self.offgrid_tiles = []
 
+    #don't use it
     def extract(self, id_pairs, keep=False):
         matches = []
         for tile in self.offgrid_tiles.copy():
@@ -43,6 +44,34 @@ class Tilemap:
                 if not keep:
                     del self.tilemap[loc]
     
+        return matches
+
+    #fixed function cuz extract has runtime error
+    def extract2(self, id_pairs, keep=False):
+        matches_offgrid=[]
+        matches = []
+        for tile in self.offgrid_tiles.copy():
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches_offgrid.append(tile.copy())
+                if not keep:
+                    self.offgrid_tiles.remove(tile)
+                    
+        for loc in self.tilemap:
+            tile = self.tilemap[loc]
+            if (tile['type'], tile['variant']) in id_pairs:
+                matches.append(tile.copy())
+                matches[-1]['pos'] = matches[-1]['pos'].copy()
+                matches[-1]['pos'][0] *= self.tile_size
+                matches[-1]['pos'][1] *= self.tile_size   
+
+        if not keep:
+            for m in matches:
+                tile_pos=str(int(m['pos'][0]/self.tile_size) )+";"+str(int(m['pos'][1]/self.tile_size))
+                print(tile_pos)
+                print(self.tilemap.keys())
+                if tile_pos in list(self.tilemap):
+                    del self.tilemap[tile_pos]
+        matches=matches+matches_offgrid
         return matches
 
     def tiles_around(self, pos):

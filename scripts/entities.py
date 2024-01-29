@@ -74,6 +74,21 @@ class PhysicsEntity:
     def render(self, surf, offset=(0, 0)):
         surf.blit(pygame.transform.flip(self.animation.img(), self.flip, False), (self.pos[0] - offset[0] + self.anim_offset[0], self.pos[1] - offset[1] + self.anim_offset[1]))
 
+class Enemy(PhysicsEntity):
+    def __init__(self, game, pos, size):
+        super().__init__(game, 'enemy', pos, size)
+
+        self.walking = 60
+
+    def update(self, tilemap, movement=(0,0)):
+        if self.walking:
+            movement = (movement[0] - 0.5 if self.flip else 0.5, movement[1])
+            self.walking = max(0,self.walking-1)
+        elif random.random()<0.01:
+            self.walking = random.randint(30,120)
+
+        super().update(tilemap, movement=movement)
+
 class Player(PhysicsEntity):
     def __init__(self, game, pos, size):
         super().__init__(game, 'player', pos, size)
@@ -125,7 +140,7 @@ class Player(PhysicsEntity):
                 self.velocity[0] *= 0.1
             pvelocity = [abs(self.dashing) / self.dashing * random.random()*3, 0]
             self.game.particles.append(Particle(self.game, 'particle', self.rect().center, velocity = pvelocity, frame = random.randint(0,7)))
-            #액션모션 추가
+            #add dash motion not disappear
             self.set_action('attack')
 
                         
@@ -134,7 +149,7 @@ class Player(PhysicsEntity):
         else:
             self.velocity[0] = min(self.velocity[0] + 0.1, 0)
 
-    #대쉬시 사라지게 하는 함수
+    #function making disappear when i use dash
     #def render(self, surf, offset=(0,0)):
         #if abs(self.dashing) <= 50:
             #super().render(surf, offset = offset)
